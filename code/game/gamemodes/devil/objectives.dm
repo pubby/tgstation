@@ -12,12 +12,13 @@
 /datum/objective/devil/soulquantity/update_explanation_text()
 	explanation_text = "Purchase, and retain control over at least [target_amount] souls."
 
-/datum/objective/devil/soulquantity/check_completion()
+/datum/objective/devil/soulquantity/check_completion(var/datum/mind/who)
 	var/count = 0
-	for(var/S in owner.devilinfo.soulsOwned)
-		var/datum/mind/L = S
-		if(L.soulOwner == owner)
-			count++
+	for(var/datum/mind/M in owners)
+		for(var/S in M.devilinfo.soulsOwned)
+			var/datum/mind/L = S
+			if(L.soulOwner == M)
+				count++
 	return count >= target_amount
 
 
@@ -50,13 +51,14 @@
 /datum/objective/devil/soulquality/update_explanation_text()
 	explanation_text = "Have mortals sign at least [target_amount] contracts [contractName]"
 
-/datum/objective/devil/soulquality/check_completion()
+/datum/objective/devil/soulquality/check_completion(var/datum/mind/who)
 	var/count = 0
-	for(var/S in owner.devilinfo.soulsOwned)
-		var/datum/mind/L = S
-		if(L.soulOwner != L && L.damnation_type == contractType)
-			count++
-	return count>=target_amount
+	for(var/datum/mind/M in owners)
+		for(var/S in M.devilinfo.soulsOwned)
+			var/datum/mind/L = S
+			if(L.soulOwner != L && L.damnation_type == contractType)
+				count++
+	return count >= target_amount
 
 
 
@@ -67,7 +69,7 @@
 	target_amount = pick(4,5)
 	explanation_text = "Ensure at least [target_amount] mortals are sintouched."
 
-/datum/objective/devil/sintouch/check_completion()
+/datum/objective/devil/sintouch/check_completion(var/datum/mind/who)
 	return target_amount>=ticker.mode.sintouched.len
 
 
@@ -81,8 +83,8 @@
 	else
 		explanation_text = "Free objective."
 
-/datum/objective/devil/buy_target/check_completion()
-	return target.soulOwner == owner
+/datum/objective/devil/buy_target/check_completion(var/datum/mind/who)
+	return target.soulOwner in owners
 
 
 /datum/objective/devil/outsell
@@ -93,12 +95,13 @@
 /datum/objective/devil/outsell/update_explanation_text()
 	explanation_text = "Purchase and retain control over more souls than [target.devilinfo.truename], known to mortals as [target.name], the [target.assigned_role]."
 
-/datum/objective/devil/outsell/check_completion()
+/datum/objective/devil/outsell/check_completion(var/datum/mind/who)
 	var/selfcount = 0
-	for(var/S in owner.devilinfo.soulsOwned)
-		var/datum/mind/L = S
-		if(L.soulOwner == owner)
-			selfcount++
+	for(var/M in owners)
+		for(var/S in M.devilinfo.soulsOwned)
+			var/datum/mind/L = S
+			if(L.soulOwner == M)
+				selfcount++
 	var/targetcount = 0
 	for(var/S in target.devilinfo.soulsOwned)
 		var/datum/mind/L = S
